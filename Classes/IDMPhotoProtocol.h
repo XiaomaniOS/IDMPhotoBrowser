@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "IDMPBConstants.h"
+#import <FLAnimatedImage/FLAnimatedImage.h>
 
 // Name of notification used when a photo has completed loading process
 // Used to notify browser display the image
@@ -50,6 +51,9 @@
 // You should release any underlying (possibly large and decompressed) image data
 // as long as the image can be re-loaded (from cache, file, or URL)
 - (void)unloadUnderlyingImage;
+
+//gif
+- (FLAnimatedImage *)gifImage;
 
 @optional
 
