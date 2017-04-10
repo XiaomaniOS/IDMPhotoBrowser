@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <FLAnimatedImage/FLAnimatedImage.h>
 
 @protocol IDMTapDetectingImageViewDelegate;
 
-@interface IDMTapDetectingImageView : FLAnimatedImageView {
+@interface IDMTapDetectingImageView : UIImageView {
 	id <IDMTapDetectingImageViewDelegate> __weak tapDelegate;
 }
 @property (nonatomic, weak) id <IDMTapDetectingImageViewDelegate> tapDelegate;

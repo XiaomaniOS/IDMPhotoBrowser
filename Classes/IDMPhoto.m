@@ -52,17 +52,6 @@ caption = _caption;
 	return [[IDMPhoto alloc] initWithURL:url];
 }
 
-- (FLAnimatedImage *)gifImageForPhoto:(id<IDMPhoto>)photo {
-    if (photo) {
-        // Get image or obtain in background
-        if ([photo gifImage]) {
-            return [photo gifImage];
-        }
-    }
-    
-    return nil;
-}
-
 + (NSArray *)photosWithImages:(NSArray *)imagesArray {
     NSMutableArray *photos = [NSMutableArray arrayWithCapacity:imagesArray.count];
     
