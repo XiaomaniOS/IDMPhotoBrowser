@@ -8,7 +8,6 @@
 
 #import "IDMPhoto.h"
 #import "IDMPhotoBrowser.h"
-#import <FLAnimatedImage/FLAnimatedImage.h>
 
 // Private
 @interface IDMPhoto () {
@@ -49,6 +48,10 @@ caption = _caption;
 
 + (IDMPhoto *)photoWithURL:(NSURL *)url {
 	return [[IDMPhoto alloc] initWithURL:url];
+}
+
++ (IDMPhoto *)photoWithAnimatedImage:(FLAnimatedImage *)animatedImage {
+    return [[IDMPhoto alloc] initWithAnimatedImage:animatedImage];
 }
 
 + (NSArray *)photosWithImages:(NSArray *)imagesArray {
@@ -94,6 +97,19 @@ caption = _caption;
     return photos;
 }
 
++ (NSArray *)photoWithAnimatedImages:(NSArray *)animatedImagesArray {
+    NSMutableArray *photos = [NSMutableArray arrayWithCapacity:animatedImagesArray.count];
+    
+    for (FLAnimatedImage *animatedImage in animatedImagesArray) {
+        if ([animatedImage isKindOfClass:[FLAnimatedImage class]]) {
+            IDMPhoto *photo = [IDMPhoto photoWithAnimatedImages:animatedImagesArray];
+            [photos addObject:photo];
+        }
+    }
+    
+    return photos;
+}
+
 #pragma mark NSObject
 
 - (id)initWithImage:(UIImage *)image {
@@ -115,6 +131,13 @@ caption = _caption;
 		_photoURL = [url copy];
 	}
 	return self;
+}
+
+- (id)initWithAnimatedImage:(FLAnimatedImage *)animatedImage {
+    if ((self = [super init])) {
+        self.animatedImage = animatedImage;
+    }
+    return self;
 }
 
 #pragma mark IDMPhoto Protocol Methods
