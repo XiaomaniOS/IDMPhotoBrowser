@@ -14,4 +14,5 @@ Pod::Spec.new do |s|
   s.dependency       'SDWebImage', '4.0.0'
   s.dependency       'DACircularProgress'
   s.dependency       'pop'
+  s.dependency       'FLAnimatedImage'
   end
