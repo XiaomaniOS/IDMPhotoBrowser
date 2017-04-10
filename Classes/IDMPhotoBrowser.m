@@ -9,8 +9,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import "IDMPhotoBrowser.h"
 #import "IDMZoomingScrollView.h"
-
 #import "pop/POP.h"
+#import <FLAnimatedImage/FLAnimatedImage.h>
 
 #ifndef IDMPhotoBrowserLocalizedStrings
 #define IDMPhotoBrowserLocalizedStrings(key) \
@@ -123,7 +123,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 // Data
 - (NSUInteger)numberOfPhotos;
 - (id<IDMPhoto>)photoAtIndex:(NSUInteger)index;
-- (UIImage *)imageForPhoto:(id<IDMPhoto>)photo;
+- (id)imageForPhoto:(id<IDMPhoto>)photo;
 - (void)loadAdjacentPhotosIfNecessary:(id<IDMPhoto>)photo;
 - (void)releaseAllUnderlyingPhotos;
 
@@ -411,7 +411,14 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
 
     float fadeAlpha = 1 - fabs(scrollView.frame.origin.y)/scrollView.frame.size.height;
 
-    UIImage *imageFromView = [scrollView.photo underlyingImage];
+    UIImage *imageFromView;
+    id underlyingImage = [scrollView.photo underlyingImage];
+    if ([underlyingImage isKindOfClass:[FLAnimatedImage class]]) {
+        imageFromView = [underlyingImage posterImage];
+    } else {
+        imageFromView = underlyingImage;
+    }
+    
     if (!imageFromView && [scrollView.photo respondsToSelector:@selector(placeholderImage)]) {
         imageFromView = [scrollView.photo placeholderImage];
     }
@@ -890,7 +897,7 @@ NSLocalizedStringFromTableInBundle((key), nil, [NSBundle bundleWithPath:[[NSBund
     return captionView;
 }
 
-- (UIImage *)imageForPhoto:(id<IDMPhoto>)photo {
+- (id)imageForPhoto:(id<IDMPhoto>)photo {
 	if (photo) {
 		// Get image or obtain in background
 		if ([photo underlyingImage]) {

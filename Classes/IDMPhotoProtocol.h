@@ -31,7 +31,8 @@
 // fetching of images from any external of source. That should be handled
 // in -loadUnderlyingImageAndNotify: which may be called by the photo browser if this
 // methods returns nil.
-- (UIImage *)underlyingImage;
+// return FLAnimatedImage if is gif
+- (id)underlyingImage;
 
 // Called when the browser has determined the underlying images is not
 // already loaded into memory but needs it.

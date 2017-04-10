@@ -8,14 +8,12 @@
 
 #import "IDMPhoto.h"
 #import "IDMPhotoBrowser.h"
+#import <FLAnimatedImage/FLAnimatedImage.h>
 
 // Private
 @interface IDMPhoto () {
     // Image Sources
     NSString *_photoPath;
-
-    // Image
-    UIImage *_underlyingImage;
 
     // Other
     NSString *_caption;
@@ -23,7 +21,8 @@
 }
 
 // Properties
-@property (nonatomic, strong) UIImage *underlyingImage;
+@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) FLAnimatedImage *animatedImage;
 
 // Methods
 - (void)imageLoadingComplete;
@@ -34,7 +33,7 @@
 @implementation IDMPhoto
 
 // Properties
-@synthesize underlyingImage = _underlyingImage, 
+@synthesize
 photoURL = _photoURL,
 caption = _caption;
 
@@ -99,7 +98,7 @@ caption = _caption;
 
 - (id)initWithImage:(UIImage *)image {
 	if ((self = [super init])) {
-		self.underlyingImage = image;
+		self.image = image;
 	}
 	return self;
 }
@@ -120,8 +119,12 @@ caption = _caption;
 
 #pragma mark IDMPhoto Protocol Methods
 
-- (UIImage *)underlyingImage {
-    return _underlyingImage;
+- (id)underlyingImage {
+    if (self.animatedImage) {
+        return self.animatedImage;
+    }
+    
+    return self.image;
 }
 
 - (void)loadUnderlyingImageAndNotify {
@@ -144,14 +147,23 @@ caption = _caption;
                 }
             } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
                 if (image) {
-                    self.underlyingImage = image;
+                    SDImageFormat imageFormat = [NSData sd_imageFormatForImageData:data];
+                    if (imageFormat == SDImageFormatGIF) {
+                        self.animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
+                        self.image = nil;
+                    } else {
+                        self.image = image;
+                        self.animatedImage = nil;
+                    }
+                    
                     [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
                 }
             }];
 
         } else {
             // Failed - no source
-            self.underlyingImage = nil;
+            self.animatedImage = nil;
+            self.image = nil;
             [self imageLoadingComplete];
         }
     }
@@ -161,9 +173,13 @@ caption = _caption;
 - (void)unloadUnderlyingImage {
     _loadingInProgress = NO;
 
-	if (self.underlyingImage && (_photoPath || _photoURL)) {
-		self.underlyingImage = nil;
+	if (self.image && (_photoPath || _photoURL)) {
+		self.image = nil;
 	}
+    
+    if (self.animatedImage && _photoURL) { 
+        self.animatedImage = nil;
+    }
 }
 
 #pragma mark - Async Loading
@@ -264,12 +280,12 @@ caption = _caption;
 - (void)loadImageFromFileAsync {
     @autoreleasepool {
         @try {
-            self.underlyingImage = [UIImage imageWithContentsOfFile:_photoPath];
-            if (!_underlyingImage) {
+            self.image = [UIImage imageWithContentsOfFile:_photoPath];
+            if (!self.image) {
                 //IDMLog(@"Error loading photo from path: %@", _photoPath);
             }
         } @finally {
-            self.underlyingImage = [self decodedImageWithImage: self.underlyingImage];
+            self.image = [self decodedImageWithImage: self.image];
             [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
         }
     }

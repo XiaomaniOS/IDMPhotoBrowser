@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "IDMPhotoProtocol.h"
 #import <SDWebImage/SDWebImageManager.h>
+#import <SDWebImage/NSData+ImageContentType.h>
 
 // This class models a photo/image and it's caption
 // If you want to handle photos, caching, decompression
@@ -28,7 +29,7 @@ typedef void (^IDMProgressUpdateBlock)(CGFloat progress);
 // Class
 + (IDMPhoto *)photoWithImage:(UIImage *)image;
 + (IDMPhoto *)photoWithFilePath:(NSString *)path;
-+ (IDMPhoto *)photoWithURL:(NSURL *)url;
++ (IDMPhoto *)photoWithURL:(NSURL *)url; // animated image only load from url
 
 + (NSArray *)photosWithImages:(NSArray *)imagesArray;
 + (NSArray *)photosWithFilePaths:(NSArray *)pathsArray;

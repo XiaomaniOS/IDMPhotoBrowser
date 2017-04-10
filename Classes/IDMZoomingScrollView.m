@@ -9,10 +9,11 @@
 #import "IDMZoomingScrollView.h"
 #import "IDMPhotoBrowser.h"
 #import "IDMPhoto.h"
+#import <FLAnimatedImage/FLAnimatedImage.h>
 
 // Declare private methods of browser
 @interface IDMPhotoBrowser ()
-- (UIImage *)imageForPhoto:(id<IDMPhoto>)photo;
+- (id)imageForPhoto:(id<IDMPhoto>)photo;
 - (void)cancelControlHiding;
 - (void)hideControlsAfterDelay;
 //- (void)toggleControls;
@@ -106,20 +107,25 @@
 		self.contentSize = CGSizeMake(0, 0);
 		
 		// Get image from browser as it handles ordering of fetching
-		UIImage *img = [self.photoBrowser imageForPhoto:_photo];
+		id img = [self.photoBrowser imageForPhoto:_photo];
 		if (img) {
+            if ([img isKindOfClass:[FLAnimatedImage class]]) {
+                _photoImageView.animatedImage = img;
+            } else {
+                _photoImageView.image = img;
+            }
+            
             // Hide ProgressView
             //_progressView.alpha = 0.0f;
             [_progressView removeFromSuperview];
             
             // Set image
-			_photoImageView.image = img;
 			_photoImageView.hidden = NO;
             
             // Setup photo frame
 			CGRect photoImageViewFrame;
 			photoImageViewFrame.origin = CGPointZero;
-			photoImageViewFrame.size = img.size;
+			photoImageViewFrame.size = [img size];
             
 			_photoImageView.frame = photoImageViewFrame;
 			self.contentSize = photoImageViewFrame.size;
